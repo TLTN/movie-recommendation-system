@@ -1,0 +1,49 @@
+data:
+  raw_path: "data/raw/ml-100k"
+  processed_path: "data/processed"
+  train_file: "ua.base"
+  test_file: "ua.test"
+  items_file: "u.item"
+  users_file: "u.user"
+
+models:
+  knn:
+    k: 40
+    similarity: "cosine"
+    based: "user"
+    normalize: true
+
+  matrix_factorization:
+    n_factors: 50
+    learning_rate: 0.01
+    regularization: 0.02
+    n_epochs: 100
+
+  neural_cf:
+    embedding_dim: 64
+    hidden_layers: [128, 64, 32]
+    dropout: 0.2
+    learning_rate: 0.001
+    batch_size: 256
+    epochs: 50
+
+evaluation:
+  metrics:
+    - "rmse"
+    - "mae"
+    - "precision_at_k"
+    - "recall_at_k"
+    - "ndcg_at_k"
+  k_values: [5, 10, 20]
+  rating_threshold: 3.5
+
+web:
+  host: "127.0.0.1"
+  port: 5000
+  debug: true
+
+paths:
+  models: "saved_models"
+  results: "results"
+  plots: "results/plots"
+  logs: "logs"

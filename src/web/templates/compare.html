@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Comparison - User {{ user_id }}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .header-section {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6));
+            color: white;
+            padding: 60px 0 40px;
+        }
+
+        /* User Info Card - NEW */
+        .user-info-banner {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .user-info-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .user-info-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar-large {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+
+        .user-details h4 {
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .user-details p {
+            margin: 5px 0 0 0;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .user-stats-row {
+            display: flex;
+            gap: 30px;
+        }
+
+        .user-stat-item {
+            text-align: center;
+            padding: 15px 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 12px;
+            min-width: 80px;
+        }
+
+        .user-stat-number {
+            display: block;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .user-stat-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .model-comparison-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
+            background: white;
+            margin-bottom: 30px;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .model-comparison-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+
+        .model-header {
+            border-radius: 20px 20px 0 0;
+            padding: 25px;
+            color: white;
+            position: relative;
+            background: linear-gradient(135deg, var(--model-color-1), var(--model-color-2));
+        }
+
+        .model-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(5deg) scale(1.05); }
+        }
+
+        .recommendation-item {
+            display: flex;
+            align-items: center;
+            padding: 18px 25px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .recommendation-item:hover {
+            background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%);
+            transform: translateX(8px);
+            border-left: 4px solid var(--model-accent-color);
+        }
+
+        .recommendation-item:last-child {
+            border-bottom: none;
+        }
+
+        .rank-badge {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-right: 20px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--model-color-1), var(--model-color-2));
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .movie-info {
+            flex-grow: 1;
+        }
+
+        .movie-title {
+            margin: 0 0 8px 0;
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1rem;
+            line-height: 1.3;
+        }
+
+        .movie-genre {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .rating-display {
+            text-align: right;
+            flex-shrink: 0;
+            padding-left: 15px;
+        }
+
+        .rating-stars {
+            color: #ffc107;
+            font-size: 1rem;
+            margin-bottom: 5px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .rating-value {
+            font-weight: 800;
+            color: #3498db;
+            font-size: 1.1rem;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .no-recommendations {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+        }
+
+        .comparison-stats {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .stat-item {
+            text-align: center;
+            position: relative;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin: 15px 0 8px 0;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-btn {
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .model-stats-mini {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255,255,255,0.15);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .mini-stat {
+            text-align: center;
+            color: white;
+        }
+
+        .mini-stat-number {
+            font-weight: 800;
+            font-size: 1.4rem;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .mini-stat-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .error-model {
+            opacity: 0.7;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-style: italic;
+            padding: 40px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        /* Model-specific color variables */
+        .model-primary {
+            --model-color-1: #007bff;
+            --model-color-2: #0056b3;
+            --model-accent-color: #007bff;
+        }
+
+        .model-success {
+            --model-color-1: #28a745;
+            --model-color-2: #1e7e34;
+            --model-accent-color: #28a745;
+        }
+
+        .model-info {
+            --model-color-1: #17a2b8;
+            --model-color-2: #117a8b;
+            --model-accent-color: #17a2b8;
+        }
+
+        @media (max-width: 991px) {
+            .model-comparison-card {
+                margin-bottom: 40px;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .recommendation-item {
+                padding: 15px 20px;
+            }
+
+            .user-info-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .user-stats-row {
+                margin-top: 20px;
+                justify-content: flex-start;
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .model-header {
+                padding: 20px;
+            }
+
+            .recommendation-item {
+                padding: 12px 15px;
+            }
+
+            .rank-badge {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
+
+            .movie-title {
+                font-size: 0.9rem;
+            }
+
+            .user-stats-row {
+                flex-wrap: wrap;
+            }
+
+            .user-stat-item {
+                min-width: 70px;
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1>
+                        <i class="fas fa-balance-scale me-3"></i>
+                        Model Comparison for User {{ user_id }}
+                    </h1>
+                    <p class="lead mb-0">
+                        Compare recommendations from different AI models side by side
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <a href="/" class="btn btn-outline-light back-btn">
+                        <i class="fas fa-home me-2"></i>Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <!-- User Information Banner - NEW -->
+        {% if user_info %}
+        <div class="user-info-banner">
+            <div class="user-info-content">
+                <div class="user-info-left">
+                    <div class="user-avatar-large">{{ user_info.user_id }}</div>
+                    <div class="user-details">
+                        <h4>User {{ user_info.user_id }}</h4>
+                        <p>{{ user_info.gender }}, {{ user_info.age }} years old • {{ user_info.occupation }}</p>
+                    </div>
+                </div>
+                <div class="user-stats-row">
+                    <div class="user-stat-item">
+                        <span class="user-stat-number">{{ user_info.age }}</span>
+                        <span class="user-stat-label">Age</span>
+                    </div>
+                    <div class="user-stat-item">
+                        <span class="user-stat-number">
+                            {% if user_info.gender == 'Nam' %}
+                                <i class="fas fa-mars"></i>
+                            {% else %}
+                                <i class="fas fa-venus"></i>
+                            {% endif %}
+                        </span>
+                        <span class="user-stat-label">{{ user_info.gender }}</span>
+                    </div>
+                    <div class="user-stat-item">
+                        <span class="user-stat-number">{{ user_info.zip_code }}</span>
+                        <span class="user-stat-label">Zone</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Overall Comparison Stats -->
+        {% if model_comparisons %}
+        <div class="comparison-stats">
+            <h5 class="text-center mb-4">
+                <i class="fas fa-chart-bar me-2"></i>Comparison Overview
+            </h5>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <i class="fas fa-robot text-primary" style="font-size: 2rem;"></i>
+                        <div class="stat-number text-primary">{{ model_comparisons|length }}</div>
+                        <small class="text-muted">Models Compared</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <i class="fas fa-user text-success" style="font-size: 2rem;"></i>
+                        <div class="stat-number text-success">{{ user_id }}</div>
+                        <small class="text-muted">User ID</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <i class="fas fa-list text-warning" style="font-size: 2rem;"></i>
+                        <div class="stat-number text-warning">{{ n_recommendations }}</div>
+                        <small class="text-muted">Recommendations Each</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <i class="fas fa-film text-info" style="font-size: 2rem;"></i>
+                        <div class="stat-number text-info">
+                            {% set all_movies = [] %}
+                            {% for model in model_comparisons %}
+                                {% for rec in model.recommendations %}
+                                    {% if all_movies.append(rec.movie_id) %}{% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                            {{ all_movies|unique|list|length if all_movies else 0 }}
+                        </div>
+                        <small class="text-muted">Unique Movies</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Model Comparisons -->
+        {% if model_comparisons %}
+            <div class="row">
+                {% for model in model_comparisons %}
+                <div class="col-lg-4">
+                    <div class="model-comparison-card {% if model.error is defined %}error-model{% endif %}">
+                        <!-- Model Header -->
+                        <div class="model-header bg-{{ model.info.color }}">
+                            <h5 class="mb-2">
+                                <i class="{{ model.info.icon }} me-2"></i>
+                                {{ model.info.full_name }}
+                            </h5>
+                            <p class="mb-0 opacity-75" style="font-size: 0.9rem;">
+                                {{ model.info.description }}
+                            </p>
+
+                            <!-- Model Stats -->
+                            {% if model.recommendations %}
+                            <div class="model-stats-mini">
+                                <div class="mini-stat">
+                                    <div class="mini-stat-number">{{ model.recommendations|length }}</div>
+                                    <div class="mini-stat-label">Movies</div>
+                                </div>
+                                <div class="mini-stat">
+                                    <div class="mini-stat-number">
+                                        {% if model.recommendations %}
+                                            {{ "%.1f"|format(model.recommendations|map(attribute='predicted_rating')|sum / model.recommendations|length) }}
+                                        {% else %}
+                                            0.0
+                                        {% endif %}
+                                    </div>
+                                    <div class="mini-stat-label">Avg Rating</div>
+                                </div>
+                                <div class="mini-stat">
+                                    <div class="mini-stat-number">
+                                        {{ model.recommendations|map(attribute='genre')|unique|list|length if model.recommendations else 0 }}
+                                    </div>
+                                    <div class="mini-stat-label">Genres</div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Recommendations List or Error -->
+                        <div class="card-body p-0">
+                            {% if model.error is defined %}
+                                <div class="error-message">
+                                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                                    Error: {{ model.error }}
+                                </div>
+                            {% elif model.recommendations %}
+                                {% for rec in model.recommendations %}
+                                <div class="recommendation-item">
+                                    <div class="rank-badge bg-{{ model.info.color }} text-white">
+                                        {{ loop.index }}
+                                    </div>
+                                    <div class="movie-info">
+                                        <div class="movie-genre">{{ rec.genre }}</div>
+                                        <h6 class="movie-title">{{ rec.title }}</h6>
+                                        <small class="text-muted">
+                                            <i class="fas fa-hashtag"></i> {{ rec.movie_id }}
+                                        </small>
+                                    </div>
+                                    <div class="rating-display">
+                                        <div class="rating-stars">
+                                            {% for i in range(1, 6) %}
+                                                {% if i <= rec.predicted_rating %}
+                                                    <i class="fas fa-star"></i>
+                                                {% elif i - 0.5 <= rec.predicted_rating %}
+                                                    <i class="fas fa-star-half-alt"></i>
+                                                {% else %}
+                                                    <i class="far fa-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <div class="rating-value">{{ rec.predicted_rating }}</div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="no-recommendations">
+                                    <i class="fas fa-exclamation-triangle text-muted" style="font-size: 2rem;"></i>
+                                    <p class="mt-2 mb-0">No recommendations available</p>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Model Actions -->
+                        <div class="card-footer bg-light text-center">
+                            <a href="/recommend?user_id={{ user_id }}&n_recommendations={{ n_recommendations }}&model={{ model.name }}"
+                               class="btn btn-{{ model.info.color }} btn-sm">
+                                <i class="fas fa-eye me-1"></i>View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Simple Overlap Analysis -->
+            {% if model_comparisons|length > 1 %}
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="fas fa-intersection me-2"></i>
+                                Common Recommendations
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">
+                                Movies that appear in multiple model recommendations will be highlighted in future versions.
+                                For now, you can visually compare the movie titles across the models above.
+                            </p>
+
+                            <!-- Simple statistics -->
+                            <div class="row text-center">
+                                {% for model in model_comparisons %}
+                                <div class="col-md-4">
+                                    <div class="border rounded p-3 mb-2">
+                                        <strong>{{ model.info.full_name }}</strong><br>
+                                        <span class="text-{{ model.info.color }}">
+                                            {{ model.recommendations|length if model.recommendations else 0 }} recommendations
+                                        </span>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+        {% else %}
+            <!-- No Models Available -->
+            <div class="row">
+                <div class="col-12 text-center">
+                    <div class="card">
+                        <div class="card-body py-5">
+                            <i class="fas fa-exclamation-triangle text-warning" style="font-size: 4rem;"></i>
+                            <h3 class="mt-4 mb-3">No Models Available for Comparison</h3>
+                            <p class="text-muted">
+                                No trained models are currently available to generate recommendations for User {{ user_id }}.
+                            </p>
+                            <div class="mt-4">
+                                <a href="/" class="btn btn-primary">
+                                    <i class="fas fa-home me-2"></i>Return to Home
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="mt-5 mb-3"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Add hover effects to recommendation items
+        document.querySelectorAll('.recommendation-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(5px)';
+            });
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+            });
+        });
+
+        // Add click functionality to view individual recommendations
+        document.querySelectorAll('.recommendation-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const movieTitle = this.querySelector('.movie-title').textContent;
+                const movieId = this.querySelector('small').textContent.replace('#', '').trim();
+                console.log(`Clicked on: ${movieTitle} (ID: ${movieId})`);
+            });
+
+            item.style.cursor = 'pointer';
+        });
+    </script>
+</body>
+</html>
