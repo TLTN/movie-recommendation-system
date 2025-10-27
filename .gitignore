@@ -156,3 +156,6 @@ venv/
 venv310/
 src/models/
 experiments/
+
+README.md
+requirements.txt
