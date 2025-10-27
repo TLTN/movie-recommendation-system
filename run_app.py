@@ -40,7 +40,6 @@ def main():
 
     except ImportError as e:
         logger.error(f"Failed to import app: {e}")
-        logger.error("Install dependencies: pip install -r requirements.txt")
         return 1
     except Exception as e:
         logger.error(f"Failed to run app: {e}")
